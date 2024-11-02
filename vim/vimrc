@@ -132,3 +132,22 @@ function! LoadTemplate()
         execute '0r ' . s:lc_template
     endif
 endfunction
+
+" Cursor shape changes based on mode
+if has('nvim')
+    " Neovim cursor
+    set guicursor=n-v-c:block-Cursor/lCursor
+    set guicursor+=i:ver25-Cursor/lCursor
+    set guicursor+=r:hor20-Cursor/lCursor
+else
+    " Vim cursor (works in most terminals)
+    if exists('$TMUX')
+        " In tmux
+        let &t_SI = "\<Esc>Ptmux;\<Esc>\e[5 q\<Esc>\\"
+        let &t_EI = "\<Esc>Ptmux;\<Esc>\e[2 q\<Esc>\\"
+    else
+        " Not in tmux
+        let &t_SI = "\e[5 q"
+        let &t_EI = "\e[2 q"
+    endif
+endif

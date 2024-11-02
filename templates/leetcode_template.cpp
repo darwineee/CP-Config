@@ -20,6 +20,8 @@ template<class T, class V> void _print(map<T, V> v) {
 }
 
 // Add your solution class here
+#define all(x) (x).begin(), (x).end()
+
 class Solution {
 public:
     

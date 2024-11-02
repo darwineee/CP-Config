@@ -295,6 +295,8 @@ if vim.fn.filereadable(lc_template_path) == 0 then
         '}',
         '',
         '// Add your solution class here',
+        '#define all(x) (x).begin(), (x).end()',
+        
         'class Solution {',
         'public:',
         '    ',
@@ -336,3 +338,11 @@ vim.api.nvim_create_autocmd('BufNewFile', {
         end
     end
 })
+
+-- Cursor shape changes based on mode
+vim.opt.guicursor = {
+    'n-v-c:block-Cursor/lCursor',  -- Normal, Visual, Command modes: block cursor
+    'i:ver25-Cursor/lCursor',      -- Insert mode: vertical line (25% width)
+    'r:hor20-Cursor/lCursor'       -- Replace mode: horizontal line (20% height)
+}
+
