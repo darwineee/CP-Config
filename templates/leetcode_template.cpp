@@ -21,6 +21,9 @@ template<class T, class V> void _print(map<T, V> v) {
 
 // Add your solution class here
 #define all(x) (x).begin(), (x).end()
+#define to(i, a, b) for(int i = (a); i <= (b); i++)
+#define til(i, a, b) for(int i = (a); i < (b); i++)
+#define cdiv(a,b) ((a)+(b)-1)/(b)
 
 class Solution {
 public:
