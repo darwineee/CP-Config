@@ -35,8 +35,11 @@ set lazyredraw
 " F7: Just build to check syntax
 nnoremap <F7> :w<CR>:!g++ -std=c++20 -Wall -Wextra % -o %:r<CR>
 
-" F8: Build with LOCAL flag and run
-nnoremap <F8> :w<CR>:!g++ -std=c++20 -O2 -Wall -DLOCAL % -o %:r && ./%:r<CR>
+" F8: Build with LOCAL flag and run with tee
+nnoremap <F8> :w<CR>:!g++ -std=c++20 -O2 -Wall -DLOCAL % -o %:r && ./%:r \| tee output.txt<CR>
+
+" F9: Format current file with clang-format
+nnoremap <F9> :w<CR>:!clang-format -i %<CR>:e<CR>
 
 " Custom mappings for competitive programming
 inoremap {{ {<CR>}<Esc>ko
@@ -45,6 +48,7 @@ inoremap ,> cin >>
 
 " Common snippets
 inoremap ,pb push_back()<Esc>i
+inoremap ,eb emplace_back()<Esc>i
 inoremap ,ppb pop_back()<Esc>i
 inoremap ,pf push_front()<Esc>i
 inoremap ,ppf pop_front()<Esc>i
@@ -78,29 +82,47 @@ function! GetElapsedTime()
     return printf("%02d:%02d:%02d", hours, minutes, seconds)
 endfunction
 
-" Status line with timer
-set statusline=\ %f                     " File name
-set statusline+=%m                      " Modified flag
-set statusline+=%r                      " Readonly flag
-set statusline+=%h                      " Help flag
-set statusline+=%w                      " Preview flag
-set statusline+=\ [%{&ff}]             " File format
-set statusline+=\ [%Y]                 " File type
-set statusline+=\ [%4l,%3v]            " Line and column
-set statusline+=\ [%p%%]               " Percentage through file
-set statusline+=\ [%{GetElapsedTime()}] " Timer
-set statusline+=\ 
+" Function to set programming status line
+function! SetProgrammingStatusLine()
+    set statusline=\ %f
+    set statusline+=%m
+    set statusline+=%r
+    set statusline+=%h
+    set statusline+=%w
+    set statusline+=\ [%{&ff}]
+    set statusline+=\ [%Y]
+    set statusline+=\ [%4l,%3v]
+    set statusline+=\ [%L\ lines]
+    set statusline+=\ [%{GetElapsedTime()}]
+endfunction
 
-" Timer update
+" Function to set simple status line
+function! SetSimpleStatusLine()
+    set statusline=\ %f
+    set statusline+=\ [%L\ lines]
+endfunction
+
+" Auto-command group for status line
+augroup StatusLineConfig
+    autocmd!
+    " Programming files
+    autocmd BufEnter,BufRead *.c,*.cpp,*.h,*.hpp,*.go,*.rs,*.java,*.py,*.rb,*.js,*.ts,*.php,*.cs call SetProgrammingStatusLine()
+    " Other files
+    autocmd BufEnter,BufRead * if index(['c', 'cpp', 'java', 'python', 'ruby', 'go', 'rust', 'javascript', 'typescript', 'php', 'cs'], &filetype) < 0 | call SetSimpleStatusLine() | endif
+augroup END
+
+" Timer update (only for programming files)
 if has('timers')
     function! UpdateTimer(timer)
-        redrawstatus
+        if index(['c', 'cpp', 'java', 'python', 'ruby', 'go', 'rust', 'javascript', 'typescript', 'php', 'cs'], &filetype) >= 0
+            redrawstatus
+        endif
     endfunction
     let timer = timer_start(1000, 'UpdateTimer', {'repeat': -1})
 endif
 
-" Reset Timer command
-command! ResetTimer let g:start_time = localtime()
+" Keep the timer update command
+command! Rtime let g:start_time = localtime()
 
 " Template system
 if has('nvim')
@@ -125,11 +147,18 @@ augroup templates
 augroup END
 
 function! LoadTemplate()
-    let filename = expand('%:t')
-    if filename =~ 'cp.cpp'
-        execute '0r ' . s:cp_template
-    elseif filename =~ 'lc.cpp'
-        execute '0r ' . s:lc_template
+    let filename = expand('%:t:r')  " Get filename without extension
+    let ext = expand('%:e')         " Get file extension
+
+    " Check if file extension is cpp
+    if ext == 'cpp'
+        " Check for competitive programming related filenames
+        if filename =~ '\v(cp|cf|codeforce|vnoj|cses)'
+            execute '0r ' . s:cp_template
+        " Check for leetcode related filenames
+        elseif filename =~ '\v(lc|leetcode)'
+            execute '0r ' . s:lc_template
+        endif
     endif
 endfunction
 

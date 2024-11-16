@@ -1,0 +1,63 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+AccessModifierOffset: -4
+IndentCaseLabels: true
+
+# Line breaks and wrapping
+ColumnLimit: 110
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+CompactNamespaces: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+
+# Parameter formatting
+BinPackArguments: false
+BinPackParameters: false
+AlignAfterOpenBracket: Align
+ExperimentalAutoDetectBinPacking: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
+
+# Braces
+BreakBeforeBraces: Attach
+Cpp11BracedListStyle: false   # Added: Better spacing in initializer lists
+
+# Alignment and spacing
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignOperands: true
+PointerAlignment: Right
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpacesInContainerLiterals: false
+BitFieldColonSpacing: Both
+AlignConsecutiveBitFields: AcrossComments
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
+SpacesBeforeTrailingComments: 3
+
+# Breaking and sorting
+SortIncludes: CaseSensitive
+SortUsingDeclarations: false
+AllowShortLambdasOnASingleLine: All
+
+# Added for better struct initialization
+AlignConsecutiveMacros: AcrossEmptyLines
+PackConstructorInitializers: Never
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerIndentWidth: 4
+SpaceBeforeCpp11BracedList: false
+IndentWrappedFunctionNames: true
+AlignArrayOfStructures: Right
