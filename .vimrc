@@ -23,7 +23,7 @@ set belloff=all
 set cursorline
 
 " Theme setting
-colorscheme slate
+colorscheme darkblue
 
 " Performance settings
 set timeoutlen=1000
@@ -32,19 +32,36 @@ set ttyfast
 set lazyredraw
 
 " Compilation and Running (using C++20)
-" F7: Just build to check syntax
-nnoremap <F7> :w<CR>:!g++ -std=c++20 -Wall -Wextra % -o %:r<CR>
+" F6: Copy entire file content to system clipboard
+nnoremap <F6> gg"+yG
 
-" F8: Build with LOCAL flag and run with tee
-nnoremap <F8> :w<CR>:!g++ -std=c++20 -O2 -Wall -DLOCAL % -o %:r && ./%:r \| tee output.txt<CR>
+" F7: Just build to check syntax
+nnoremap <F7> :w<CR>:!g++ -std=c++20 -Wall -DLOCAL -Wextra % -o %:r<CR>
+
+" F8: Build and run, redirecting stdout to OUT and stderr to ERR
+nnoremap <F8> :w<CR>:!g++ -std=c++20 -Wall -DLOCAL -Wextra % -o %:r && (./%:r > >(tee OUT) 2> >(tee ERR))<CR>
 
 " F9: Format current file with clang-format
 nnoremap <F9> :w<CR>:!clang-format -i %<CR>:e<CR>
+
 
 " Custom mappings for competitive programming
 inoremap {{ {<CR>}<Esc>ko
 inoremap ,< cout << 
 inoremap ,> cin >> 
+
+" scanf patterns (sf = scan format)
+inoremap ,sfd scanf("%d", &)<Esc>i
+inoremap ,sfs scanf("%s", )<Esc>i
+inoremap ,sfc scanf("%c", &)<Esc>i
+inoremap ,sff scanf("%f", &)<Esc>i
+inoremap ,sfdb scanf("%lf", &)<Esc>i
+
+" printf patterns (prf = print format)
+inoremap ,prfd printf("%d\n", )<Esc>i
+inoremap ,prfll printf("%lld\n", )<Esc>i
+inoremap ,prfs printf("%s\n", )<Esc>i
+inoremap ,prff printf("%f\n", )<Esc>i
 
 " Common snippets
 inoremap ,pb push_back()<Esc>i
@@ -52,7 +69,7 @@ inoremap ,eb emplace_back()<Esc>i
 inoremap ,ppb pop_back()<Esc>i
 inoremap ,pf push_front()<Esc>i
 inoremap ,ppf pop_front()<Esc>i
-inoremap ,fr for(int i = 0; i < n; i++) {<CR>}<Esc>O
+inoremap ,fr for(int i = n; i >= 0; i--) {<CR>}<Esc>O
 inoremap ,ll long long
 inoremap ,v vector<><Esc>i
 inoremap ,s set<><Esc>i
@@ -62,6 +79,8 @@ inoremap ,dq deque<><Esc>i
 inoremap ,m map<><Esc>i
 inoremap ,hm unordered_map<><Esc>i
 inoremap ,hs unordered_set<><Esc>i
+inoremap ,hp priority_queue<><Esc>i
+inoremap ,hpm priority_queue<,vector<>,greater<>><Esc>5ba
 
 " Auto-pairs
 inoremap ( ()<Esc>i
@@ -125,15 +144,9 @@ endif
 command! Rtime let g:start_time = localtime()
 
 " Template system
-if has('nvim')
-    let s:template_dir = stdpath('config') . '/templates'
-    let s:cp_template = s:template_dir . '/cp_template.cpp'
-    let s:lc_template = s:template_dir . '/leetcode_template.cpp'
-else
-    let s:template_dir = $HOME . '/.vim/templates'
-    let s:cp_template = s:template_dir . '/cp_template.cpp'
-    let s:lc_template = s:template_dir . '/leetcode_template.cpp'
-endif
+let s:template_dir = '~/algo'
+let s:cp_template = s:template_dir . '/cp_template.cpp'
+let s:lc_template = s:template_dir . '/leetcode_template.cpp'
 
 " Create template directory if it doesn't exist
 if !isdirectory(s:template_dir)
@@ -153,7 +166,7 @@ function! LoadTemplate()
     " Check if file extension is cpp
     if ext == 'cpp'
         " Check for competitive programming related filenames
-        if filename =~ '\v(cp|cf|codeforce|vnoj|cses)'
+        if filename =~ '\v(cp|cf|codeforce|vnoj|cses|vj|spoj)'
             execute '0r ' . s:cp_template
         " Check for leetcode related filenames
         elseif filename =~ '\v(lc|leetcode)'
